@@ -1,0 +1,17 @@
+{
+  "name": "newBlog2022",
+  "version": "0.0.1",
+  "description": "new blog by vuepress2",
+  "main": "index.js",
+  "author": "Wak",
+  "license": "MIT",
+  "private": false,
+  "scripts": {
+    "docs:dev": "vuepress dev docs --clean-cache",
+    "docs:build": "vuepress build docs --clean-cache"
+  },
+  "devDependencies": {
+    "vuepress": "^2.0.0-beta.36",
+    "vuepress-theme-gungnir": "^2.0.0-alpha.18"
+  }
+}
