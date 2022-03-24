@@ -10,7 +10,7 @@ tags:
 - example
 ---
 
-Welcome to VuePress theme Gungnir.
+Welcome to VuePress theme Gungnir.s
 
 <!-- more -->
 

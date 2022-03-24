@@ -3,8 +3,10 @@ import type { GungnirThemeOptions } from "vuepress-theme-gungnir";
 // import { navbar, sidebar } from "./configs";
 
 export default  defineUserConfig<GungnirThemeOptions>({
-  base: "/",
   // 站点配置
+  // base: "/blog-vuepress2/", //github page
+  base: "/", // vercel
+  dest: 'public',// vercel发布时要用
   lang: 'zh-CN',
   title: 'Wak Blog',
   description: 'Just playing around',
@@ -19,7 +21,11 @@ export default  defineUserConfig<GungnirThemeOptions>({
       }
     ],
   ],
-  
+  bundler:
+  // specify bundler via environment variable
+    process.env.DOCS_BUNDLER ??
+    // use vite by default
+    "@vuepress/vite",
   // 主题和它的配置
   theme: 'gungnir',
   themeConfig: {
@@ -122,7 +128,9 @@ export default  defineUserConfig<GungnirThemeOptions>({
         mark: true  // 高亮标记（默认：false）
       },
       chartjs: true,
-      mermaid: true
+      mermaid: true,
+      ba: '2288f030179bc7571034aa96d66725e2',
+      ga: 'G-DXWYKKWRDX',
     }
   },
   plugins: [
