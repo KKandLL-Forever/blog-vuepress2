@@ -4143,7 +4143,7 @@ vuepress-plugin-code-enhance@2.0.0-alpha.10:
   resolved "https://registry.npmmirror.com/vuepress-plugin-code-enhance/-/vuepress-plugin-code-enhance-2.0.0-alpha.10.tgz#a39a04798826e3a32ff8d8dc16d9306ab38e1f65"
   integrity sha512-ybib9fOIzEmy1AqmjQ2m/iZKvz/QB35y/SRu2c+GMVGINRLmxMkC0wWuZMYs1/0dRqtqMEaL6vHO/765x5Du9A==
 
-vuepress-plugin-giscus@2.0.0-alpha.16:
+vuepress-plugin-giscus@2.0.0-alpha.16, vuepress-plugin-giscus@^2.0.0-alpha.16:
   version "2.0.0-alpha.16"
   resolved "https://registry.npmmirror.com/vuepress-plugin-giscus/-/vuepress-plugin-giscus-2.0.0-alpha.16.tgz#3ddcb52d4a281041bc2a1057d84bab7c1543c5fc"
   integrity sha512-Hgm0/kIkygnMlei77lrs7ZzitSoCCsYBjALaidBKJWqHOjyeDt2ISjz+wEU52EfMcgqY9MX/ZyGP5TxFibHsEg==

@@ -13,5 +13,9 @@
   "devDependencies": {
     "vuepress": "^2.0.0-beta.36",
     "vuepress-theme-gungnir": "^2.0.0-alpha.18"
+  },
+  "dependencies": {
+    "oh-vue-icons": "^1.0.0-rc2",
+    "vuepress-plugin-giscus": "^2.0.0-alpha.16"
   }
 }

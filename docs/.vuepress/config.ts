@@ -1,18 +1,61 @@
-import { defineUserConfig } from 'vuepress'
-import type { DefaultThemeOptions } from 'vuepress'
+import { defineUserConfig } from "vuepress";
+import type { GungnirThemeOptions } from "vuepress-theme-gungnir";
+import { navbar, sidebar } from "./configs";
 
-export default defineUserConfig<DefaultThemeOptions>({
+
+export default  defineUserConfig<GungnirThemeOptions>({
+  base: "/",
   // 站点配置
-  lang: 'en-US',
+  lang: 'zh-CN',
   title: 'Hello VuePress',
   description: 'Just playing around',
+  head: [
+    [
+      "link",
+      {
+        rel: "icon",
+        type: "image/png",
+        sizes: "16x16",
+        href: `/img/logo/favicon-16x16.png`
+      }
+    ],
+  ],
   
   // 主题和它的配置
   theme: 'gungnir',
   themeConfig: {
+    // sidebar: sidebar.zh,
+    navbar: [
+      {
+        text: "首页",
+        link: "/",
+        icon: "fa-fort-awesome"
+      },
+      {
+        text: "标签",
+        link: "/tags/",
+        icon: "fa-tag"
+      },
+      {
+        text: "链接",
+        link: "/links/",
+        icon: "fa-satellite-dish"
+      },
+      {
+        text: "文档",
+        link: "/zh/docs/basic/intro.md",
+        icon: "ri-book-2-fill"
+      },
+      {
+        text: "VuePress",
+        link: "https://v2.vuepress.vuejs.org/zh/",
+        icon: "ri-vuejs-line"
+      }
+    ],
+    docsDir: "docs",
     personalInfo: {
       // 必须：名称，将在首页、移动端侧边栏和文章作者信息处显示
-      name: "Cool Dragon",
+      name: "Cool Dragon222",
     
       // 必须：头像，将在首页和移动端侧边栏显示
       avatar: "/img/avatar.jpeg",
@@ -38,21 +81,24 @@ export default defineUserConfig<DefaultThemeOptions>({
         // ...
       }
     },
-    homeHeaderImages: {
-      // 可选：首页本地封面图路径和蒙版
-      local: [
-        // 图 1
-        {
-          "path": "/img/home-bg/1.jpg",
-          "mask": "rgba(40, 57, 101, .4)"
-        },
-        // 图 2
-        // {
-        //   "path": "/img/home-bg/2.jpg",
-        //   "mask": "rgb(251, 170, 152, .2)"
-        // }
-      ]
-    },
+    homeHeaderImages: [
+      {
+        path: "/img/home-bg/1.jpg",
+        mask: "rgba(40, 57, 101, .4)"
+      },
+      {
+        path: "/img/home-bg/2.jpg",
+        mask: "rgb(251, 170, 152, .2)"
+      },
+      {
+        path: "/img/home-bg/3.jpg",
+        mask: "rgba(68, 74, 83, .1)"
+      },
+      {
+        path: "/img/home-bg/4.jpg",
+        mask: "rgba(19, 75, 50, .2)"
+      }
+    ],
     footer: `
       &copy; <a href="https://github.com/Renovamen" target="_blank">Renovamen</a> 2018-2022
       <br>
