@@ -11,8 +11,10 @@ import {
   RiBook2Fill,
   RiGithubLine,
   RiSailboatLine,
-  RiVuejsLine
+  RiVuejsLine,
+  CoLeetcode
 } from "oh-vue-icons/icons";
+
 
 addIcons(
   RiBilibiliLine,
@@ -25,7 +27,8 @@ addIcons(
   RiGithubLine,
   OiGitCompare,
   OiRocket,
-  RiSailboatLine
+  RiSailboatLine,
+  CoLeetcode
 );
 
 /* eslint-disable-next-line @typescript-eslint/no-empty-function */
