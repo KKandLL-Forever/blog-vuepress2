@@ -1,13 +1,13 @@
 ---
-layout: Post
-title: Hello Word 1
-subtitle: A Test Post without The Header Image
-author: Renovamen
-date: 2021-12-24
-headerImage: /img/in-post/2021-12-24/header.jpg
-tags:
-- test
-- tag with space
+layout: Post  
+title: markdown example   
+subtitle: A Test Post without The Header Image  
+author: Renovamen  
+date: 2021-12-24  
+useHeaderImage: true  
+headerImage: /img/pages/page01.png  
+tags:  
+- example
 ---
 
 Welcome to VuePress theme Gungnir.
