@@ -5,7 +5,7 @@ import type { GungnirThemeOptions } from "vuepress-theme-gungnir";
 export default  defineUserConfig<GungnirThemeOptions>({
   // 站点配置
   base: "/",
-  dest: 'public',
+  // dest: 'public',
   lang: 'zh-CN',
   title: 'Wak Blog',
   description: 'Just playing around',
