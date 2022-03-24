@@ -3,8 +3,9 @@ import type { GungnirThemeOptions } from "vuepress-theme-gungnir";
 // import { navbar, sidebar } from "./configs";
 
 export default  defineUserConfig<GungnirThemeOptions>({
-  base: "/",
   // 站点配置
+  base: "/",
+  dest: 'public',
   lang: 'zh-CN',
   title: 'Wak Blog',
   description: 'Just playing around',

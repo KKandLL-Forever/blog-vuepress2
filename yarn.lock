@@ -964,7 +964,7 @@
   dependencies:
     katex "^0.15.2"
 
-"@renovamen/vuepress-plugin-md-plus@2.0.0-alpha.5", "@renovamen/vuepress-plugin-md-plus@^2.0.0-alpha.5":
+"@renovamen/vuepress-plugin-md-plus@2.0.0-alpha.5":
   version "2.0.0-alpha.5"
   resolved "https://registry.npmmirror.com/@renovamen/vuepress-plugin-md-plus/-/vuepress-plugin-md-plus-2.0.0-alpha.5.tgz#826e7cffb2a384ede1c7779b0c801ce6f2df1af9"
   integrity sha512-I09mWS+mi3JP0Q4EV7n2lS1eonvqeN/tEotD7gBt3avDy7yOVlwaWTZRmaYgyaDDXKYCQ/h66iOP9T780F4nwg==
@@ -979,7 +979,7 @@
   dependencies:
     mermaid "^8.14.0"
 
-"@renovamen/vuepress-plugin-reading-time@2.0.0-alpha.10", "@renovamen/vuepress-plugin-reading-time@^2.0.0-alpha.10":
+"@renovamen/vuepress-plugin-reading-time@2.0.0-alpha.10":
   version "2.0.0-alpha.10"
   resolved "https://registry.npmmirror.com/@renovamen/vuepress-plugin-reading-time/-/vuepress-plugin-reading-time-2.0.0-alpha.10.tgz#475baed03b1d198d52413103f0a6372e1f7e7ef7"
   integrity sha512-bRkNq77ClAzmoBuedi1lOGFKxWbvhHZeAYNR2jGBjWkDUHzPujCyA0lefvogKe/digUz65ylk2+8Cr7JJY05Tw==
@@ -4143,7 +4143,7 @@ vuepress-plugin-code-enhance@2.0.0-alpha.10:
   resolved "https://registry.npmmirror.com/vuepress-plugin-code-enhance/-/vuepress-plugin-code-enhance-2.0.0-alpha.10.tgz#a39a04798826e3a32ff8d8dc16d9306ab38e1f65"
   integrity sha512-ybib9fOIzEmy1AqmjQ2m/iZKvz/QB35y/SRu2c+GMVGINRLmxMkC0wWuZMYs1/0dRqtqMEaL6vHO/765x5Du9A==
 
-vuepress-plugin-giscus@2.0.0-alpha.16, vuepress-plugin-giscus@^2.0.0-alpha.16:
+vuepress-plugin-giscus@2.0.0-alpha.16:
   version "2.0.0-alpha.16"
   resolved "https://registry.npmmirror.com/vuepress-plugin-giscus/-/vuepress-plugin-giscus-2.0.0-alpha.16.tgz#3ddcb52d4a281041bc2a1057d84bab7c1543c5fc"
   integrity sha512-Hgm0/kIkygnMlei77lrs7ZzitSoCCsYBjALaidBKJWqHOjyeDt2ISjz+wEU52EfMcgqY9MX/ZyGP5TxFibHsEg==
