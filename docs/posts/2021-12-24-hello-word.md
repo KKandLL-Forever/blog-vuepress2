@@ -5,7 +5,7 @@ subtitle: A Test Post without The Header Image
 author: Renovamen  
 date: 2021-12-24  
 useHeaderImage: true  
-headerImage: /img/pages/page01.png  
+headerImage: /img/pages/page02.webp  
 tags:  
 - example
 ---

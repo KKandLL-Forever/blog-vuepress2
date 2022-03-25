@@ -1,4 +1,14 @@
-# ElementUI修改默认样式的几种方法
+---
+layout: Post  
+title: ElementUI修改默认样式的几种方法    
+author: Wak  
+date: 2022-03-25  
+useHeaderImage: true  
+headerImage: /img/pages/page03.webp  
+tags:
+- 组件
+---
+
 
 > ElementUI是一款非常强大的前端UI组件库，它默认定义了很多美观的样式，但是我们在实际开发过程中不可避免地遇到需要修改ElementUI默认样式。下面总结了几种修改默认样式的方法。
 >

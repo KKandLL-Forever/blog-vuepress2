@@ -17,7 +17,7 @@ export default  defineUserConfig<GungnirThemeOptions>({
         rel: "icon",
         type: "image/png",
         sizes: "16x16",
-        href: `/img/logo/favicon-16x16.png`
+        href: `/img/logo/favicon-16x16@2x.png`
       }
     ],
   ],
