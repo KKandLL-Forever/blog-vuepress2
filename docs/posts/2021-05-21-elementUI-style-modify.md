@@ -1,8 +1,9 @@
 ---
 layout: Post  
 title: ElementUI修改默认样式的几种方法    
+subtitle: 虽然我只用/deep/...🤓  
 author: Wak  
-date: 2022-03-25  
+date: 2021-05-21  
 useHeaderImage: true  
 headerImage: /img/pages/page03.webp  
 tags:
@@ -14,6 +15,8 @@ tags:
 >
 
 ### 1.新建全局样式表
+
+---
 
 新建 global.css 文件，并在 main.js 中引入。 global.css 文件一般都放在 src->assets 静态资源文件夹下的 style 文件夹下.
 
@@ -29,6 +32,7 @@ import "./assets/style/global.css";
 
 ### 3. 使用深度作用选择器
 
+---
 如果你希望 scoped 样式中的一个选择器能够作用得“更深”，例如影响子组件，你可以使用 >>> 操作符：
 
 ```scss
@@ -50,6 +54,7 @@ import "./assets/style/global.css";
 
 ### 4. 通过绑定内联样式覆盖默认样式
 
+---
 ```html
 <el-button :style="textStyle"></el-button>
 ```
@@ -72,6 +77,8 @@ export default {
 
 
 ### 5. 通过绑定类样式覆盖默认样式
+
+---
 
 ```html
 <el-button class="testInput"></el-input>

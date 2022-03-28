@@ -37,7 +37,7 @@ export default  defineUserConfig<GungnirThemeOptions>({
         subtitle: 'Don’t put limits on yourself',
         // 可选：标签页封面图路径和蒙版
         bgImage: {
-          path: '/img/pages/page01.png',
+          path: '/img/tags/tags.webp',
           // mask: 'rgba(211, 136, 37, .5)'
         }
       },
@@ -54,10 +54,16 @@ export default  defineUserConfig<GungnirThemeOptions>({
         icon: "fa-tag"
       },
       {
+        text: "wKcUI",
+        link: "https://kkandll-forever.github.io/wkcUI/",
+        icon: "bi-ui-radios-grid"
+      },
+      {
         text: "VuePress",
         link: "https://v2.vuepress.vuejs.org/zh/",
         icon: "ri-vuejs-line"
       },
+
       
       // {
       //   text: "链接",
@@ -77,7 +83,7 @@ export default  defineUserConfig<GungnirThemeOptions>({
       // 必须：名称，将在首页、移动端侧边栏和文章作者信息处显示
       name: "Wak",
       // 必须：头像，将在首页和移动端侧边栏显示
-      avatar: "/img/avatar.jpeg",
+      avatar: "/img/avatar.webp",
       // 必须：个人简介，将在首页显示
       description: "More than FrontEnd.",
       // 可选：社交平台账号，将在首页和移动端侧边栏显示

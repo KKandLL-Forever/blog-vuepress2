@@ -12,7 +12,8 @@ import {
   RiGithubLine,
   RiSailboatLine,
   RiVuejsLine,
-  CoLeetcode
+  CoLeetcode,
+  BiUiRadiosGrid
 } from "oh-vue-icons/icons";
 
 
@@ -28,7 +29,8 @@ addIcons(
   OiGitCompare,
   OiRocket,
   RiSailboatLine,
-  CoLeetcode
+  CoLeetcode,
+  BiUiRadiosGrid
 );
 
 /* eslint-disable-next-line @typescript-eslint/no-empty-function */
