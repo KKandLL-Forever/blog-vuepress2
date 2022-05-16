@@ -335,6 +335,7 @@ class myPromise {
     let p = myPromise((resolve,reject) => {
       if (this.status === FULFILLED) {
         setTimeout(() => {
+          let xxx = success(this.value)
           resolvePromise(p,xxx,resolve,reject)
         },0)
       }
@@ -352,10 +353,92 @@ class myPromise {
 
 ## 捕获错误
 #### 执行器错误捕获
+```javascript
+//myPromise.js
+class myPromise {
+  /* ---省略--- */
+  constructor(fn) {
+    try {
+      fn(this.resolve,this.reject)
+    }catch (e) {
+      throw new Error('executor error')
+    }
+  }
+  /* ---省略--- */
+}
+```
+#### `then()`中的错误捕获
+```javascript
+//myPromise.js
+class myPromise {
+  /* ---省略--- */
+  then(success,error){
+    let p = new myPromise((resolve,reject) => {
+      if (this.status === FULFILLED) {
+        setTimeout(() => {
+          try {
+            let xxx = success(this.value)
+            resolvePromise(p,xxx,resolve,reject)
+          }catch (e) {
+            reject(e)
+          }
+        },0)
+      }
+    })
+    return p
+  }
+  /* ---省略--- */
+}
+```
+FULFILLED状态和REJECTED状态的处理方式是一样的,这里就省略了  
+PENDING状态的处理稍微有些不同
+```javascript
+//myPromise.js
+class myPromise {
+  /* ---省略--- */
+  resolve = (value) => {
+    /* ---省略--- */
+    while (this.successCB.length) this.successCB.shift()()
+  }
+  reject = (reason) => {
+    /* ---省略--- */
+    while (this.failCB.length) this.failCB.shift()()
+  }
+  then(success,error){
+    let p = new myPromise((resolve,reject) => {
+      /* ---省略--- */
+      if (this.status === PENDING) {
+        //这里push一个箭头函数是为了方便写try,catch
+        this.successCB.push(() => {
+          setTimeout(() => {
+            try {
+              let xxx = success(this.value)
+              resolvePromise(p,xxx,resolve,reject)
+            }catch (e) {
+              reject(e)
+            }
+          },0)
+        })
+        this.failCB.push(() => {
+          setTimeout(() => {
+            try {
+              let xxx = error(this.reason)
+              resolvePromise(p,xxx,resolve,reject)
+            }catch (e) {
+              reject(e)
+            }
+          },0)
+        })
+      }
+    })
+    return p
+  }
+  /* ---省略--- */
+}
+```
 
-## then()链式调用补充
-## then参数更改为可选参数
-支持
+## then()参数更改为可选参数
+原生Promise在调用then()时,可以选择不传任何参数
 ```javascript
 Promise
   .then() //等价于.then(value => value)
@@ -363,6 +446,17 @@ Promise
   .then(value => {console.log(value)})
 ```
 核心原理,就是判断then的两个参数存在与否
+```javascript
+//myPromise.js
+class myPromise {
+  /* ---省略--- */
+  then(success,error){
+    success = success ? success : value => value
+    error = error ? error : value => value
+    /* ---省略--- */
+  }
+}
+```
 
 ## Promise.all()
 ### 特点
