@@ -323,8 +323,8 @@ function resolvePromise (p, xxx, resolve,reject) {
 
 #### 4. p的获取时机
 按照之前我们的分析,写到这里应该就实现功能了。  
-但上面的代码隐藏了一个bug: 我们在向`resolvePromise()`传递p时,仔细想一想,这时的p创建了吗?  
-熟悉Js异步机制的小伙伴应该反应过来了,这时候p根本就没创建嘛。
+但上面的代码隐藏了一个bug: 我们在向`resolvePromise()`传递`p`时,仔细想一想,这时的`p`创建了吗?  
+熟悉Js异步机制的小伙伴应该反应过来了,这时候`p`根本就没创建嘛。
 我们对代码做出如下改动就能解决这个问题:
 ```javascript
 
@@ -345,7 +345,7 @@ class myPromise {
 }
 /* ---省略--- */
 ```
-`setTimeout`让代码变成异步逻辑,等p创建好之后,在执行`setTimeout`回调函数里面的代码  
+`setTimeout`让代码变成异步逻辑,等`p`创建好之后,在执行`setTimeout`回调函数里面的代码  
 :::tip
 记得把FULFILLED,REJECTED,PENDING都加上`setTimeout()`哦
 :::
@@ -390,8 +390,8 @@ class myPromise {
   /* ---省略--- */
 }
 ```
-FULFILLED状态和REJECTED状态的处理方式是一样的,这里就省略了  
-PENDING状态的处理稍微有些不同
+`FULFILLED`状态和`REJECTED`状态的处理方式是一样的,这里就省略了  
+`PENDING`状态的处理稍微有些不同
 ```javascript
 //myPromise.js
 class myPromise {
@@ -438,14 +438,14 @@ class myPromise {
 ```
 
 ## then()参数更改为可选参数
-原生Promise在调用then()时,可以选择不传任何参数
+原生`Promise`在调用`then()`时,可以选择不传任何参数
 ```javascript
 Promise
   .then() //等价于.then(value => value)
   .then()
   .then(value => {console.log(value)})
 ```
-核心原理,就是判断then的两个参数存在与否
+核心原理,就是判断`then`的两个参数存在与否
 ```javascript
 //myPromise.js
 class myPromise {
@@ -461,7 +461,7 @@ class myPromise {
 ## Promise.all()
 ### 特点
 还是老规矩, 想搞清楚`Promise.all()`的实现原理,我们先来梳理一下`Promise.all()`本身有什么特点:
-1. `Promise.all()`同样返回一个`Promise`,也就意味着同样可以使用then()方法
+1. 可以直接使用`Promise.all()`来调用,所以`all()`是一个`static`方法;同样返回一个`Promise`,也就意味着同样可以使用`then()`方法
 2. `Promise.all()`会保证执行顺序按照传递进来的数组参数的顺序来执行
 ```javascript
 //伪代码
@@ -469,12 +469,12 @@ Promise.all(['a',p1,p2,'b'])
   .then(res => console.log(res))
 //res => ['a',p1,p2,'b']
 ```
-3. `Promise.all()`的数组参数中的所有promise返回结果为成功时,`Promise.all()`返回的状态才是成功的
-4. 数组参数如果不是Promise实例直接`resolve()`
+3. `Promise.all()`的数组参数中的所有`Promise`返回结果为成功时,`Promise.all()`返回的状态才是成功的
+4. 数组参数如果不是`Promise`实例直接`resolve()`
 
 ### 代码实现
 #### 特性1
-Promise.all()接收一个数组,返回一个Promise,并会对这个数组进行处理之后,将其传递给then()
+`Promise.all()`接收一个数组,返回一个`Promise`,并会对这个数组进行处理之后,将其传递给`then()`
 ```javascript
 class myPromise {
   /* ---省略--- */
@@ -545,37 +545,138 @@ class myPromise{
 }
 ```
 其中index的引入,非常巧妙。  
-add()帮助函数实在遍历array时调用的,当item非Promise实例,没什么好说的,往result里放就行  
-那在item是Promise实例且为异步逻辑时:  
+`add()`帮助函数实在遍历array时调用的,当item非Promise实例,没什么好说的,往result里放就行  
+那在item是`Promise`实例且为异步逻辑时:  
 1. `let item = array[i]`执行Promise的执行函数,将异步逻辑放入微任务中
 2. `item.then()`因为有异步逻辑,所以then内部会因为Promise的状态是pending,将异步逻辑push进successCb(参考then部分的逻辑)
 3. 这一轮for循环结束,继续遍历,重复上面的步骤
-4. for循环结束,微任务执行队列中的Promise执行函数开始依次执行,这时如果执行函数执行了resolve(),该Promise状态更改为fulfilled。`item.then()`中的回调函数开始执行,也就是add()帮助函数开始执行,index也被顺利递增。当`index===array.length`时,Promise.all()`执行resolve(result)`,之后就可以继续调用Promise.all()的then()函数了
+4. for循环结束,微任务执行队列中的Promise执行函数开始依次执行,这时如果执行函数执行了`resolve()`,该Promise状态更改为`fulfilled`。`item.then()`中的回调函数开始执行,也就是add()帮助函数开始执行,index也被顺利递增。当`index===array.length`时,Promise.all()`执行resolve(result)`,之后就可以继续调用Promise.all()的then()函数了
 
 
 
-## Promise.resolve
-## Promise.finally
-返回this.then
-## Promise.catch
+## Promise.resolve()
+### 分析
+#### 1. 判断传递进来的参数是否为`Promise`对象,是则直接返回这个`Promise`对象,否则`new`一个`Promise`对象,并用`resolve()`传递出去即可
+```javascript
+//伪代码
+Promise.resolve('10').then(value => console.log(value)) //10
+let p1 = new Promise(resolve => resolve('aaa'))
+Promise.resolve(p1).then(res => console.log(res))//'aaa'
+```
+### 实现
+```javascript
+class myPromise{
+  static resolve(value){
+    if(value instanceof myPromise) return value
+    return new myPromise(resolve => resolve(value))
+  }
+}
+```
+## Promise.finally()
+### 分析
+#### 无论`Promise`成功还是失败,都会执行`finally()`的回调函数
+```javascript
+let p = new Promise((resolve,reject) => {
+  resolve('p1')
+  // reject('p1 error')
+})
+p.then(value => console.log(value),error => console.log(error))
+  .finally(() => console.log('finally'))
+```
+#### `finally()`的回调函数没有任何参数,同时也返回一个`Promise`对象
+```javascript
+let p = new Promise((resolve,reject) => {
+  resolve('p1')
+  // reject('p1 error')
+})
+p.then(
+  value => {
+    console.log(value)
+    return value
+  },
+  error => console.log(error)
+)
+  .finally(() => {return 'finally'})
+  .then(value2 => console.log(value2))// p1
+```
+这里有个小细节,`finally()`虽然返回了"finally"字符串,但后面的`then()`接收的还是`resolve('p1')`  
+如图:  
+![1](../.vuepress/public/img/article/myPromise/promiseFinally.png)  
+
+### 实现
+```javascript
+  /* ---省略--- */
+class myPromise{
+  /* ---省略--- */
+  finally(cb){
+    return this.then(
+      value => {
+        cb()
+        return value
+      },
+      reason => {
+        cb()
+        throw reason
+      })
+  }
+  /* ---省略--- */
+}
+```
+这里的`this.then()`相当于再次执行了一次`this`这个`Promise`实例的then方法,执行`finally()`的回调函数并且返回`this.then()`成功/失败的回调函数的值
+但这里有个问题,试想一下下面的代码:
+```javascript
+function p1 () {
+  return new myPromise(resolve => {
+    setTimeout(() =>{
+      resolve('p1')
+    },3000)
+  })
+}
+let p2 = new myPromise(resolve => resolve('p2'))
+p2.finally(() => {
+  console.log('finally')
+  return p1()
+}).then(value => console.log(value))
+```
+`finally()`不会等`p1()`中的异步逻辑执行完成再执行,直接输出"finally","p2"  
+改造下代码:  
+```javascript
+  /* ---省略--- */
+class myPromise{
+  /* ---省略--- */
+  finally(cb){
+    return this.then(
+      value => {
+        return myPromise.resolve(cb()).then(() => value)//①
+      },
+      reason => {
+        return myPromise.resolve(cb()).then(() => {throw reason})
+      })
+  }
+  /* ---省略--- */
+}
+```
+利用`myPromise.resolve()`会将任何值转换为`Promise`对象的特点,通过`then()`处理异步逻辑  
+同时结合之前的这张图来理解为什么①返回的是`this.then()`成功回调函数的`value`:  
+![1](../.vuepress/public/img/article/myPromise/promiseFinally.png)
+
+## Promise.catch()
+### 分析
+返回一个`Promise`对象,捕获`rejected`状态
+### 实现
+`this.then()`的成功回调函数传入`undefined`即可
+```javascript
+  /* ---省略--- */
+class myPromise{
+  /* ---省略--- */
+  catch(failCB){
+    return this.then(undefined,failCB)
+  }
+  /* ---省略--- */
+}
+```
 
 
-
-
-
-
-
-
-## 
-
-
-
-
-
-## 参考文章
-[^1]:周阳编著,数学的起源与发展,现代出版社,2013.03,第17页
-
-[^3]:[浅谈http协议（三）：HTTP 报文及其结构](https://segmentfault.com/a/1190000019788537)  
 
 
 
