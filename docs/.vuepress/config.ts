@@ -1,8 +1,11 @@
 import { defineUserConfig } from "vuepress";
 import type { GungnirThemeOptions } from "vuepress-theme-gungnir";
+import gungnirTheme from 'vuepress-theme-gungnir'
+import { viteBundler } from "@vuepress/bundler-vite";
+
 // import { navbar, sidebar } from "./configs";
 
-export default  defineUserConfig<GungnirThemeOptions>({
+export default  defineUserConfig({
   // 站点配置
   // base: "/blog-vuepress2/", //github page
   base: "/", // vercel
@@ -21,15 +24,11 @@ export default  defineUserConfig<GungnirThemeOptions>({
       }
     ],
   ],
-  bundler:
-  // specify bundler via environment variable
-    process.env.DOCS_BUNDLER ??
-    // use vite by default
-    "@vuepress/vite",
+  bundler: viteBundler(),
   // 主题和它的配置
-  theme: 'gungnir',
-  themeConfig: {
-    // sidebar: sidebar.zh,
+  theme: gungnirTheme({
+    catalog: false,
+    navbarTitle: "Gungnir",
     pages: {
       // 标签页配置
       tags: {
@@ -63,8 +62,8 @@ export default  defineUserConfig<GungnirThemeOptions>({
         link: "https://v2.vuepress.vuejs.org/zh/",
         icon: "ri-vuejs-line"
       },
-
-      
+    
+    
       // {
       //   text: "链接",
       //   link: "/links/",
@@ -75,7 +74,7 @@ export default  defineUserConfig<GungnirThemeOptions>({
       //   link: "/zh/docs/basic/intro.md",
       //   icon: "ri-book-2-fill"
       // },
-      
+  
     ],
     docsDir: "docs",
     hitokoto: "https://v1.hitokoto.cn?c=f&c=l&c=k", // enable hitokoto (一言) or not?
@@ -138,7 +137,7 @@ export default  defineUserConfig<GungnirThemeOptions>({
       ba: '2288f030179bc7571034aa96d66725e2',
       ga: 'G-DXWYKKWRDX',
     }
-  },
+  }),
   plugins: [
 
   ]
