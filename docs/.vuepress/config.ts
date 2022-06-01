@@ -136,6 +136,14 @@ export default  defineUserConfig({
       mermaid: true,
       ba: '2288f030179bc7571034aa96d66725e2',
       ga: 'G-DXWYKKWRDX',
+      giscus: {
+        repo: "KKandLL-Forever/blog-vuepress2",  // 必须，string，格式：user_name/repo_name
+        repoId: "R_kgDOHDfxfA",  // 必须，string，在 Giscus 官网上生成
+        category: "Announcements",  // 必须，string
+        categoryId: "DIC_kwDOHDfxfM4CPaAy",  // 必须，string，在 Giscus 官网上生成
+        mapping: "title",  // 可选，string，default="title"
+        lazyLoad: true,  // 可选，boolean，default=false（如果设为 true，Giscus 的加载将延迟到用户滚动到评论容器附近）
+      }
     }
   }),
   plugins: [
