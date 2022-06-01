@@ -12,6 +12,7 @@
   },
   "devDependencies": {
     "vuepress": "2.0.0-beta.46",
+    "vuepress-plugin-china-search-console": "^2.1.1",
     "vuepress-theme-gungnir": "2.0.0-alpha.24"
   },
   "dependencies": {}

@@ -1279,7 +1279,7 @@
     "@vue/compiler-ssr" "3.2.36"
     "@vue/shared" "3.2.36"
 
-"@vue/shared@3.2.36", "@vue/shared@^3.2.35":
+"@vue/shared@3.2.36", "@vue/shared@^3.2.33", "@vue/shared@^3.2.35":
   version "3.2.36"
   resolved "https://registry.npmjs.org/@vue/shared/-/shared-3.2.36.tgz#35e11200542cf29068ba787dad57da9bdb82f644"
   integrity sha512-JtB41wXl7Au3+Nl3gD16Cfpj7k/6aCroZ6BbOiCMFCMvrOpkg/qQUXTso2XowaNqBbnkuGHurLAqkLBxNGc1hQ==
@@ -1325,7 +1325,17 @@
     vue "^3.2.35"
     vue-router "^4.0.15"
 
-"@vuepress/core@2.0.0-beta.46":
+"@vuepress/client@^2.0.0-beta.45":
+  version "2.0.0-beta.45"
+  resolved "https://registry.npmjs.org/@vuepress/client/-/client-2.0.0-beta.45.tgz#49a1b818fb730dc07ebb0dacf1e2def608107961"
+  integrity sha512-4oK77LI5FpHvF6bZxREfLdWfOgAZroDkyy46moRopasg72UeXjfvOTb/6tIKaNQP6e/Kn2ubRxVeLe7DR5d9Ng==
+  dependencies:
+    "@vue/devtools-api" "^6.1.4"
+    "@vuepress/shared" "2.0.0-beta.45"
+    vue "^3.2.33"
+    vue-router "^4.0.15"
+
+"@vuepress/core@2.0.0-beta.46", "@vuepress/core@^2.0.0-beta.45":
   version "2.0.0-beta.46"
   resolved "https://registry.npmjs.org/@vuepress/core/-/core-2.0.0-beta.46.tgz#61365e905f0dfb9282e866768e4e23f89d31348c"
   integrity sha512-JFRpyg5R01Ujcpgym2aQwFmMU4FFQtRQxYQeOnLDHSEdo+U09I+OztBuVJvst3Xu99urqRH7Jo7yRL3igyXlAA==
@@ -1493,6 +1503,13 @@
     "@vuepress/utils" "2.0.0-beta.46"
     vue "^3.2.35"
 
+"@vuepress/shared@2.0.0-beta.45":
+  version "2.0.0-beta.45"
+  resolved "https://registry.npmjs.org/@vuepress/shared/-/shared-2.0.0-beta.45.tgz#6d099af2a9a1125a399f32a249ef7a67e00d9025"
+  integrity sha512-lYj+rgMtQ6liWjvzVy7jGux/Eix5ExbUy8b2uFAAsSE4v5wrdGeVgcFunVb40VPK3Mu0uyW4AvhCsPteLRUp1A==
+  dependencies:
+    "@vue/shared" "^3.2.33"
+
 "@vuepress/shared@2.0.0-beta.46":
   version "2.0.0-beta.46"
   resolved "https://registry.npmjs.org/@vuepress/shared/-/shared-2.0.0-beta.46.tgz#b928e61c25faceff93acd4e69b386def147229bf"
@@ -1524,7 +1541,7 @@
     vue "^3.2.35"
     vue-router "^4.0.15"
 
-"@vuepress/utils@2.0.0-beta.46":
+"@vuepress/utils@2.0.0-beta.46", "@vuepress/utils@^2.0.0-beta.45":
   version "2.0.0-beta.46"
   resolved "https://registry.npmjs.org/@vuepress/utils/-/utils-2.0.0-beta.46.tgz#182f05d0af86ffa710dd320168d7a650fdc72a10"
   integrity sha512-rzNJPKlyZuWjCzjrQT08W6an/7OBc7GpiTx/XQj5Fd/VTDAARrw7EQP+jLTtU3PzJa3o55obHpxWR2NNUU/jtg==
@@ -4223,7 +4240,7 @@ vue-router@^4.0.15:
   dependencies:
     "@vue/devtools-api" "^6.0.0"
 
-vue@^3.2.35, vue@^3.2.36:
+vue@^3.2.33, vue@^3.2.35, vue@^3.2.36:
   version "3.2.36"
   resolved "https://registry.npmjs.org/vue/-/vue-3.2.36.tgz#8daa996e2ced521708de97d066c7c998e8bc3378"
   integrity sha512-5yTXmrE6gW8IQgttzHW5bfBiFA6mx35ZXHjGLDmKYzW6MMmYvCwuKybANRepwkMYeXw2v1buGg3/lPICY5YlZw==
@@ -4260,6 +4277,17 @@ vuepress-plugin-chart@2.0.0-alpha.24:
     chart.js "^3.7.1"
     markdown-it "^13.0.1"
     vue "^3.2.36"
+
+vuepress-plugin-china-search-console@^2.1.1:
+  version "2.1.1"
+  resolved "https://registry.npmjs.org/vuepress-plugin-china-search-console/-/vuepress-plugin-china-search-console-2.1.1.tgz#e0c33bbc0fc6a4878f1f47a8ad5c2809a9c198d3"
+  integrity sha512-8tf/t6SqnZ7GpcvFqK+Y0Y4BBBBrnsV4f4xskx3QEH543bY2czFmx7FDR2NJ3x2aoOaMhLbfIAsT2CWVCgdR+Q==
+  dependencies:
+    "@vuepress/client" "^2.0.0-beta.45"
+    "@vuepress/core" "^2.0.0-beta.45"
+    "@vuepress/utils" "^2.0.0-beta.45"
+    vue "^3.2.33"
+    vue-router "^4.0.15"
 
 vuepress-plugin-code-enhance@2.0.0-alpha.24:
   version "2.0.0-alpha.24"
