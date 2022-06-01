@@ -127,6 +127,14 @@ export default  defineUserConfig({
       <a href="https://github.com/Renovamen/vuepress-theme-gungnir" target="_blank">Gungnir</a>
     `,
     themePlugins: {
+      search: {
+        locales: {
+          "/": {
+            placeholder: "Search"
+          },
+        },
+        hotKeys: ['s', '/']
+      },
       katex: true,
       mdPlus: {
         footnote: true,  // 脚注（默认：false）
@@ -150,3 +158,19 @@ export default  defineUserConfig({
 
   ]
 })
+
+//giscus配置 备忘没有其他作用
+// <script src="https://giscus.app/client.js"
+// data-repo="KKandLL-Forever/blog-vuepress2"
+// data-repo-id="R_kgDOHDfxfA"
+// data-category="Announcements"
+// data-category-id="DIC_kwDOHDfxfM4CPaAy"
+// data-mapping="title"
+// data-reactions-enabled="1"
+// data-emit-metadata="0"
+// data-input-position="bottom"
+// data-theme="dark_dimmed"
+// data-lang="zh-CN"
+// crossorigin="anonymous"
+// async>
+// </script>
