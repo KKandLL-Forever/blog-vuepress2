@@ -10,3 +10,4 @@ let proxyList = new Proxy(list,{
 })
 proxyList.pop()
 console.log(proxyList,'list')
+
