@@ -69,11 +69,6 @@ export default  defineUserConfig({
       //   link: "/links/",
       //   icon: "fa-satellite-dish"
       // },
-      // {
-      //   text: "文档",
-      //   link: "/zh/docs/basic/intro.md",
-      //   icon: "ri-book-2-fill"
-      // },
   
     ],
     docsDir: "docs",
