@@ -28,7 +28,7 @@ export default  defineUserConfig({
   // 主题和它的配置
   theme: gungnirTheme({
     catalog: false,
-    navbarTitle: "Gungnir",
+    navbarTitle: "WaK",
     pages: {
       // 标签页配置
       tags: {
@@ -132,8 +132,7 @@ export default  defineUserConfig({
       },
       katex: true,
       mdPlus: {
-        footnote: true,  // 脚注（默认：false）
-        mark: true  // 高亮标记（默认：false）
+        all: true
       },
       chartjs: true,
       mermaid: true,
