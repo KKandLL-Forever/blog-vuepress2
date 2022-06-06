@@ -77,9 +77,12 @@ export function initUse(Vue: GlobalAPI) {
 import install from './install'
 
 export default class myRouter {
-  static install: () => void
-  
-  constructor(){}
+  //核心:根据不同的路径跳转不同的页面/组件
+  static install: () => {}
+  options
+  constructor(options) {
+    this.options = options
+  }
 }
 myRouter.install = install
 
@@ -130,7 +133,7 @@ if里的this指向main.js文件里的初始化Vue的那个实例,else则指向�
 
 ## Router的构造函数
 ### Router构建选项
-new Router()初始化时接收一个[对象参数](https://v3.router.vuejs.org/zh/api/#router-%E6%9E%84%E5%BB%BA%E9%80%89%E9%A1%B9),本文聚焦于其中的[routes](https://v3.router.vuejs.org/zh/api/#routes)、[mode](https://v3.router.vuejs.org/zh/api/#mode)、[base](https://v3.router.vuejs.org/zh/api/#base)。
+`new Router()`初始化时接收一个[对象参数](https://v3.router.vuejs.org/zh/api/#router-%E6%9E%84%E5%BB%BA%E9%80%89%E9%A1%B9),本文聚焦于其中的[routes](https://v3.router.vuejs.org/zh/api/#routes)、[mode](https://v3.router.vuejs.org/zh/api/#mode)、[base](https://v3.router.vuejs.org/zh/api/#base)。
 
 路由配置`routes`是一个数组,可包含[嵌套路由](https://v3.router.vuejs.org/zh/guide/essentials/nested-routes.html)配置,但这个数组对我们操作路由来说不是很方便,所以初始化时需要扁平化处理一下。处理这个步骤的核心方法就是`createMatcher`
 ```javascript
@@ -149,7 +152,10 @@ export default class myRouter {
 ```
 ### createMatcher
 `createMatcher`返回2个方法(源码中返回4个方法,这里简化了),addRoutes用来动态添加路由配置,math用来匹配路径;  
-`createMatcher`中处理路由配置扁平化的方法为`createRouteMap`
+`createMatcher`中处理路由配置扁平化的方法为`createRouteMap`  
+  
+
+create-matcher.js代码:  
 ```javascript
 //create-matcher.js
 import createRouteMap from './create-route-map'
@@ -175,9 +181,12 @@ export default function createMatcher(routes){
 }
 ```
 ### createRouteMap
-`createRouteMap`处理路由配置,返回路由路径pathList和路由路径和路由其他信息的映射表pathMap  
-其中的`addRouteRecord`方法中, 定义了如何处理routes,然后生成pathList和pathMap  
-如果路由配置含有嵌套路由,递归执行`addRouteRecord`
+`createRouteMap`处理路由配置,返回路由路径pathList和路由路径和路由其他信息的映射表pathMap;  
+其中的`addRouteRecord`方法中, 定义了如何处理routes,然后生成pathList和pathMap;  
+如果路由配置含有嵌套路由,递归执行`addRouteRecord`。  
+  
+
+create-route-map.js代码:  
 ```javascript
 //create-route-map.js
 export default function createRouteMap(routes,oldPathList,oldPathMap) {
@@ -198,8 +207,8 @@ export default function createRouteMap(routes,oldPathList,oldPathMap) {
 }
 
 function addRouteRecord(route, pathList, pathMap, parent){
-  //parent不存在: path = 'about'
-  //parent存在: path = 'about/a'
+  //parent不存在: path = '/about'
+  //parent存在: path = '/about/a'
   let path = parent ? `${parent.path}/${route.path}` :route.path
   let component = route.component
   //record中保存在路由的一些信息,源码中信息有很多,这里进行了简化
@@ -221,6 +230,44 @@ function addRouteRecord(route, pathList, pathMap, parent){
   }
 }
 ```
+### mode选项
+`new Router()`初始化时接收参数中,mode用来指定启用hash模式还是history模式(abstract本文不讨论)  
+Router对象的构建选项中,会初始化一个值用来指定模式, 根据传入的mode值来分别使用HashHistory/H5History  
+```javascript
+import HashHistory from './history/HashHistory'
+export default class myRouter {
+  /*-----重复代码省略-----*/
+  mode
+  hitory
+  constructor(options) {
+    this.mode = options.mode || 'hash'
+    this.history = new HashHistory(this)
+  }
+  
+  /*-----重复代码省略-----*/
+}
+```
+`HashHistory`类继承基类`History`,传入`new Router()`生成的实例
+```javascript
+import History from './base'
+
+export default class HashHistory extends History {
+  constructor(router) {
+    super(router)
+  }
+}
+```
+我们在Vue.use(Router)时,执行了Router内部的install方法,install方法内部在根实例时又执行了Router对象的init方法。现在我们来看下init方法是怎么执行的。  
+初始化时, 路由就需要跳转到页面的入口并渲染响应组件, 我们定义一个transitionTo方法来实现  
+```javascript
+/*-----重复代码省略-----*/
+export default class myRouter {
+  init(app) {
+    
+  }
+}
+```
+
 
 
 ## router-link
