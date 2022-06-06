@@ -303,24 +303,33 @@ export default class myRouter {
 内部根据路由地址location,通过Router对象上的`match`方法来匹配出对应的组件  
 ```javascript
 //base.js
+import {createRoute} from '@/lib/utils/route'
+
 export default class History {
   constructor(router) {
     this.router = router
+    this.current = createRoute(null,{path: '/'})
   }
-  
   //onComplete路由变化后的回调
   transitionTo(location, onComplete) {
     let newRoute = this.router.match(location)
+    //这里进行了简化
+    if(this.current.path === newRoute.path && this.current.matched.length === newRoute.matched.length) return
+    this.updateRoute(newRoute)
     onComplete && onComplete()
+  }
+  updateRoute(route){
+    this.current = route
   }
 }
 ```
 在`init()`中,还有一个定义在`HashHistory类`上获取当前路由hash值的`getCurrentLocation`方法  
-核心逻辑是获取`window.location.href`的值,并去除`#`,得到路径
+核心逻辑是获取`window.location.href`的值,并去除`#`之前的字符,得到路径  
+这里不使用`window.location.hash`的原因是Firefox不支持
 ```javascript
 //HashHistory.js
 function getHash(){
-  //'#/about' → '/about'
+  //'http://localhost:8080/#/about' → '/about'
   let href = window.location.href
   const index = href.indexOf('#')
   if(index < 0) return ''
@@ -343,6 +352,45 @@ export default class HashHistory extends History {
       this.transitionTo(getHash())
     })
   }
+}
+```
+
+### 路径的响应式
+### 默认路径
+当默认路径为空, 例如: `http://localhost:8080`时,页面不会跳转至默认组件,因为这时候我们启用的hash模式,默认路径为空并不能跳转至指定路径,也就不能渲染对应的组件。`HashHistory.js`需要再改造一下  
+`ensureSlash()`用来判断获得的hash值第一个字符是否为`/`,如果不是`/`,调用`replaceHash('/'+ '')`  
+`replaceHash()`替换路径  
+`getUrl(path)`返回不带`#`的基础路径+path参数组合而成的路径
+```javascript
+//HashHistory.js
+/*-----重复代码省略-----*/
+function getHash(){
+  //'http://localhost:8080/#/about' → '/about'
+  let href = window.location.href
+  const index = href.indexOf('#')
+  if(index < 0) return ''
+  return href.slice(index + 1)
+}
+function ensureSlash () {
+  const path = getHash()
+  if (path.charAt(0) === '/') {
+    return true
+  }
+  replaceHash('/' + path)
+  return false
+}
+function getUrl (path) {
+  //getUrl('/')
+  //http://localhost:8081/#/about → 'http://localhost:8081/#/'
+  const href = window.location.href
+  const i = href.indexOf('#')
+  const base = i >= 0 ? href.slice(0, i) : href
+  return `${base}#${path}`
+}
+function replaceHash (path) {
+  //replaceHash('/')
+  //'http://localhost:8081' → 'http://localhost:8081/#/'
+  window.location.replace(getUrl(path))
 }
 ```
 
