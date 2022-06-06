@@ -153,20 +153,31 @@ export default class myRouter {
 ### createMatcher
 `createMatcher`返回2个方法(源码中返回4个方法,这里简化了),addRoutes用来动态添加路由配置,math用来匹配路径;  
 `createMatcher`中处理路由配置扁平化的方法为`createRouteMap`  
-  
+`match`方法在之后的History基类中会用到,这里先不讨论
 
 create-matcher.js代码:  
 ```javascript
 //create-matcher.js
 import createRouteMap from './create-route-map'
+import {createRoute} from '@/lib/utils/route'
 
 export default function createMatcher(routes){
   //扁平化routes
   //将传入的routes转换成路径字符串和对应组件映射的数据结构
   let {pathList,pathMap} = createRouteMap(routes)
   
-  //匹配路径 {'/': record,'/about',record,'/about/user1',record}
-  function match () { }
+  //匹配路径,用location在pathMap里找到对应的记录
+  //返回{path: '/about/a', matched: [About,AboutA]}
+  function match () {
+    let record = pathMap[location]
+    let local = {
+      path: location
+    }
+    if(record){
+      return createRoute(record, local)
+    }
+    return createRoute(null, local)
+  }
   
   function addRoutes (routes) {
     //添加新路由,需要将新添加的路由更新至pathList和pathMap中
@@ -249,6 +260,7 @@ export default class myRouter {
 ```
 `HashHistory`类继承基类`History`,传入`new Router()`生成的实例
 ```javascript
+//HashHistory.js
 import History from './base'
 
 export default class HashHistory extends History {
@@ -257,13 +269,79 @@ export default class HashHistory extends History {
   }
 }
 ```
-我们在Vue.use(Router)时,执行了Router内部的install方法,install方法内部在根实例时又执行了Router对象的init方法。现在我们来看下init方法是怎么执行的。  
-初始化时, 路由就需要跳转到页面的入口并渲染响应组件, 我们定义一个transitionTo方法来实现  
+```javascript
+//base.js
+export default class History {
+  constructor(router) {
+    this.router = router
+  }
+}
+```
+### Router.init()
+在路由初始化时,就使用到了`History类`  
+我们在`Vue.use(Router)`时,执行了Router内部的`install`方法,`install`方法内部在根实例时又执行了Router对象的`init`方法。现在我们来看下init方法是怎么执行的。  
+初始化时, 路由需要跳转到页面的入口并渲染响应组件, 我们定义一个`transitionTo`方法来实现  
+`transitionTo`接收两个参数,路径和回调函数  
+
 ```javascript
 /*-----重复代码省略-----*/
 export default class myRouter {
-  init(app) {
-    
+  init(app){//根实例
+    //根据当前路由,显示至指定组件
+    const history = this.history
+    const setupHashListener = () => {
+      history.setupListeners()
+    }
+    history.transitionTo(
+      history.getCurrentLocation(),
+      setupHashListener
+    )
+  }
+}
+```
+`transitionTo`是hash、history、abstract模式公共方法,定义在`base基类`上
+内部根据路由地址location,通过Router对象上的`match`方法来匹配出对应的组件  
+```javascript
+//base.js
+export default class History {
+  constructor(router) {
+    this.router = router
+  }
+  
+  //onComplete路由变化后的回调
+  transitionTo(location, onComplete) {
+    let newRoute = this.router.match(location)
+    onComplete && onComplete()
+  }
+}
+```
+在`init()`中,还有一个定义在`HashHistory类`上获取当前路由hash值的`getCurrentLocation`方法  
+核心逻辑是获取`window.location.href`的值,并去除`#`,得到路径
+```javascript
+//HashHistory.js
+function getHash(){
+  //'#/about' → '/about'
+  let href = window.location.href
+  const index = href.indexOf('#')
+  if(index < 0) return ''
+  return href.slice(index + 1)
+}
+
+export default class HashHistory extends History {
+  /*-----重复代码省略-----*/
+  getCurrentLocation() {
+    return getHash()
+  }
+}
+```
+`init()`中,`setupListeners`在源码中是定义在在`base基类`上,但是个空方法,在`HashHistory`继承基类时覆写这个方法,这里只实现其核心逻辑
+```javascript
+export default class HashHistory extends History {
+  /*-----重复代码省略-----*/
+  setupListeners(){
+    window.addEventListener('hashchange', () => {
+      this.transitionTo(getHash())
+    })
   }
 }
 ```
