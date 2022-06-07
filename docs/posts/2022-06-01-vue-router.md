@@ -12,7 +12,7 @@ tags:
 ---
 
 >无论是实现某个API, 还是新设计一个API, 都需要从这个API怎么使用来着手&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;----鲁迅
-# Vue-router基础用法
+## Vue-router基础用法
 ### 基础用法
 ```javascript
 import Vue from 'vue'
@@ -21,7 +21,22 @@ import Router from 'vue-router'
 Vue.use(Router)
 const router = new Router({
   routes: [
-    {name: 'home', path: '/', component: Home}
+    {
+      path: '/',
+      name: 'Home',
+      component: Home
+    },
+    {
+      path: '/about',
+      name: 'About',
+      component: () => import(/* webpackChunkName: "about" */ '../views/About.vue'),
+      children: [
+        {
+          path: 'a',
+          component: () => import('@/views/AboutA')
+        }
+      ]
+    }
   ]
 })
 new Vue({
@@ -33,7 +48,17 @@ new Vue({
 2. `new Router()`说明Vue-router导出一个类, 并且接收一个参数,参数目前看是一个对象
 3. 挂载Router对象至Vue上
 
-# 实现
+```vue
+<template>
+  <div class="about">
+    <h1>This is an about page</h1>
+    <router-link to="/about/a">AboutA</router-link>
+    <router-view></router-view>
+  </div>
+</template>
+```
+4. `router-view`和`router-link`的使用
+
 ## Router.install
 ### Vue.use用法
 Vue-router是作为Vue的插件来植入的,为了更好地理解,我们先来看一下`Vue.use()`的实现。  
@@ -168,7 +193,7 @@ export default function createMatcher(routes){
   
   //匹配路径,用location在pathMap里找到对应的记录
   //返回{path: '/about/a', matched: [About,AboutA]}
-  function match () {
+  function match (location) {
     let record = pathMap[location]
     let local = {
       path: location
@@ -301,6 +326,8 @@ export default class myRouter {
 ```
 `transitionTo`是hash、history、abstract模式公共方法,定义在`base基类`上
 内部根据路由地址location,通过Router对象上的`match`方法来匹配出对应的组件  
+`base基类`内部维护一个`current`变量,用来保存当前的路径和组件信息  
+在监听到hash变化时,找到新路径的对应信息,更新至`current`(后面会作相应的响应式处理)
 ```javascript
 //base.js
 import {createRoute} from '@/lib/utils/route'
@@ -323,6 +350,54 @@ export default class History {
   }
 }
 ```
+这里我们可以回到[*create-matcher*](#creatematcher)代码  
+`match`方法根据传入的路径location,在pathMap中寻找对应路径的record记录  
+返回`createRoute()`方法的结果
+```javascript
+//create-matcher.js
+/*-----重复代码省略-----*/
+  //匹配路径,用location在pathMap里找到对应的记录
+  //返回{path: '/about/a', matched: [About,AboutA]}
+  function match (location) {
+    let record = pathMap[location]
+    let local = {
+      path: location
+    }
+    if(record){
+      return createRoute(record, local)
+    }
+    return createRoute(null, local)
+  }
+/*-----重复代码省略-----*/
+```
+`createRoute`是一个工具函数  
+核心逻辑是构造一个带有路径和路径对应record的数据结构  
+特别是针对嵌套路由, 会将嵌套路由的组件依次放入matched数组中,之后依次渲染
+```javascript
+result = {
+  location: '/about',
+  matched: [
+    {About:  About},
+    {AboutA: AboutA}//about对应的component
+  ]
+}
+```
+```javascript
+export function createRoute(record, location){
+  let res = []
+  if(record){
+    while (record){
+      res.unshift(record)
+      record = record.parent
+    }
+  }
+  return {
+    ...location,
+    matched: res
+  }
+}
+```
+
 在`init()`中,还有一个定义在`HashHistory类`上获取当前路由hash值的`getCurrentLocation`方法  
 核心逻辑是获取`window.location.href`的值,并去除`#`之前的字符,得到路径  
 这里不使用`window.location.hash`的原因是Firefox不支持
@@ -343,7 +418,8 @@ export default class HashHistory extends History {
   }
 }
 ```
-`init()`中,`setupListeners`在源码中是定义在在`base基类`上,但是个空方法,在`HashHistory`继承基类时覆写这个方法,这里只实现其核心逻辑
+`init()`中,`setupListeners`在源码中是定义在在`base基类`上,但是个空方法,在`HashHistory`继承基类时覆写这个方法,这里只实现其核心逻辑  
+在`getCurrentLocation`执行完,设置hash值的监听器, 在我们改变URL时执行回调函数(也就是URL改变时渲染对应组件)
 ```javascript
 export default class HashHistory extends History {
   /*-----重复代码省略-----*/
@@ -358,7 +434,7 @@ export default class HashHistory extends History {
 ### 路径的响应式
 ### 默认路径
 当默认路径为空, 例如: `http://localhost:8080`时,页面不会跳转至默认组件,因为这时候我们启用的hash模式,默认路径为空并不能跳转至指定路径,也就不能渲染对应的组件。`HashHistory.js`需要再改造一下  
-`ensureSlash()`用来判断获得的hash值第一个字符是否为`/`,如果不是`/`,调用`replaceHash('/'+ '')`  
+`ensureSlash()`用来判断获得的hash值第一个字符是否为`/`,如果不是`/`,调用`replaceHash('/'+ '')`,在HashHistory的构造函数中调用;    
 `replaceHash()`替换路径  
 `getUrl(path)`返回不带`#`的基础路径+path参数组合而成的路径
 ```javascript
@@ -393,10 +469,110 @@ function replaceHash (path) {
   window.location.replace(getUrl(path))
 }
 ```
-
-
-
-## router-link
+通过以上代码,在路径发生变化时,路径和路径对应组件会成功保存/执行,但这时候页面还不会渲染  
+原因是,保存当前路径信息的`current`只是维护在`base基类`内部,`Vue`并不能做出响应式的渲染  
+我们在`Vue.mixin`时,对根实例新增一个私有属性`_route`,将`current`绑定在上面  
+```javascript
+//install.js
+/*-----重复代码省略-----*/
+Vue.mixin({
+  beforeCreate() {
+    if(this.$options.router){
+      //使current称为响应式
+      Vue.util.defineReactive(this, '_route', this._router.history.current)
+    }else{
+      /*-----重复代码省略-----*/
+    }
+  }
+})
+/*-----重复代码省略-----*/
+```
+`_router`是我们的Router对象,维护了`history`对象,`current`属性就保存在上面。  
+再通过暴露`$route`和`$router`来提供访问
+```javascript
+//install.js
+/*-----重复代码省略-----*/
+Object.defineProperty(Vue.prototype, '$route', {
+  get(){
+    return this._routerRoot._route
+  }
+})
+Object.defineProperty(Vue.prototype, '$router', {
+  get(){
+    return this._routerRoot._router
+  }
+})
+/*-----重复代码省略-----*/
+```
+回到[*transitionTo*](#router-init),我们在根据路径更新`current`时需要一并更新`_route`  
+```javascript
+//myRouter.js
+export default class myRouter {
+  /*-----重复代码省略-----*/
+  init(app){
+    history.listen((route) => {
+      app._route = route
+    })
+  }
+  /*-----重复代码省略-----*/
+}
+```
+```javascript
+//base.js
+/*-----重复代码省略-----*/
+export default class History {
+  constructor(router) {
+    this.router = router
+    this.current = createRoute(null, {path: '/'})
+  }
+  /*-----重复代码省略-----*/
+  updateRoute(route){
+    this.current = route
+    this.cb && this.cb(route)
+  }
+  listen(cb){
+    this.cb = cb
+  }
+}
+/*-----重复代码省略-----*/
+```
+现在我们实现了`_route`的响应式, 之后在`RouterView`和`RouterLink`中我们就可以根据`_route`来渲染对应视图  
 
 ## router-view
+利用函数式组件来创建`router-view`  
+在`new Vue()`之前注册组件  
+```javascript
+//install.js
+import RouterView from '@/lib/components/view'
 
+export default function install(Vue){
+  /*-----重复代码省略-----*/
+  Vue.component('RouterView', RouterView)
+}
+```
+```javascript
+//RouterView.js
+export default {
+  name: 'RouterView',
+  functional: true,
+  render(h, {parent,data}){
+    let route = parent.$route
+    let matched = route.matched
+    data.routerView = true
+    let depth = 0
+    
+    while (parent){
+      if(parent.$vnode && parent.$vnode.data.routerView){
+        depth++
+      }
+      parent = parent.$parent
+    }
+    let record = matched[depth]
+    if (!record) {
+      return h()
+    }
+    return h(record.component, data)
+  }
+}
+
+```

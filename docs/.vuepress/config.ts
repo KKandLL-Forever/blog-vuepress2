@@ -27,7 +27,7 @@ export default  defineUserConfig({
   bundler: viteBundler(),
   // 主题和它的配置
   theme: gungnirTheme({
-    catalog: false,
+    catalog: true,
     navbarTitle: "WaK",
     pages: {
       // 标签页配置
