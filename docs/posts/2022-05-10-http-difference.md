@@ -14,6 +14,12 @@ tags:
 
 ## HTTP/1.0
 
+https://www.zhihu.com/question/34074946/answer/75364178
+https://www.bilibili.com/video/BV1s34y1S7bT
+https://www.bilibili.com/video/BV1hL411P7ct
+https://imququ.com/post/http2-and-wpo-2.html
+https://imququ.com/post/series.html
+https://mengsixing.github.io/blog/osi-http.html#http-1-0
 
 ![1](../.vuepress/public/img/article/netModel.png)
 
