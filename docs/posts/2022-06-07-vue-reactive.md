@@ -34,6 +34,45 @@ tags:
    ├─ README.md ······································ repo readme
    └─ package.json ······································ package file
 ```
+## 阅读源码前的一些Tips
+
+#### '蔑视'源码
+这里所说的蔑视不是说轻视源码的作用，而是在面对源码时不要过于害怕或者抵触。  
+一开始很多新手(没错，我也是其中一员)开始看源码前，都会被源码的庞大和复杂所震慑，不敢或者不愿意去看源码。  
+其实大可不必，源码阅读是需要一定前置知识和技巧的铺垫的，新手看不懂源码非常正常，不用为之苦恼，甚至觉得自己菜，自己不行啥的(别问我怎么知道的)。
+#### 不要迷失在源码中
+Vue, React等开源库的源码通常都很庞杂，里面充斥着各种边界情况的处理，工具函数的运用，看着看着你可能就不知道自己跳转到哪里去了，回头一想，又不知道自己看到哪儿了，也忘记了这个函数/变量是干嘛的。  
+我个人(也是很多人推荐的)觉得，阅读源码，先要对他有一个整体的认识，了解他大概是由哪几部分组成的，入口文件在哪里，然后由入口文件去分析他各个模块的调用顺序(这个时候完全不用看具体实现)；这样就能了解一个大致的结构了。  
+这时，我们再带着我们的目标--你想了解哪一部分的源码: 比如响应式系统，Set, nextTick等，再去对应的部分找具体的实现。  
+这样做有几个好处:
+1. 结构清晰，方便我们快速定位具体功能的代码实现
+2. 大脑负担小，当我们设立了目标，其他不是目标的代码我们就可以忽略暂时不看
+3. 这样做的一个过程，也是将一个复杂任务拆分成若干简单任务，让我们有看源码的动力和勇气
+
+#### 关于调试
+阅读源码的过程中，如果有任何不清楚的地方(比如某个变量是什么值，函数的调用位置等)，可以通过chrome给我们提供的工具来帮助我们更好的理解。  
+在调试之前，我们需要先做几个准备工作：
+1. 构建带有sourceMap的,Vue编译&运行时文件  
+   在`scripts`命令中加上`--sourcemap`选项
+```json
+{
+  "scripts": {
+    "dev": "rollup -w -c scripts/config.js --environment TARGET:full-dev --sourcemap"
+  }
+}
+```
+
+2. 准备一个最起初的Vue起始文件。(带有`new Vue()`和`render()`函数，并且使用`$mount`执行渲染)。（随便渲染一个div即可）
+3. 这里我们以寻找`Vue.prototype.$mount`的调用位置为例：  
+   在chrome的源码标签页中，`Vue.prototype.$mount`的第一行代码上打上断点
+   ![vue-use-api](../.vuepress/public/img/article/vue-reactive/chrome-source.png)
+
+然后我们刷新当前页面，进入调试模式  
+在chrome调试工具右侧，可以找到调用栈的信息。大致长这样：  
+![vue-use-api](../.vuepress/public/img/article/vue-reactive/chrome-callStack.png)  
+从调用栈上，我们不难发现，`Vue.$mount`是在`Vue._init`方法中调用的，而`Vue._init`又是由Vue的构造函数调用的。`(anonymous)`表示匿名函数，点进去就能看到就是我们`new Vue()`时的代码。
+
+
 
 ## 寻找入口文件
 
@@ -92,6 +131,14 @@ function genConfig(name) {
 
 从`full-dev`对象就可以找到入口文件，`entry-runtime-with-compiler.ts`了。(其他版本入口文件同理)
 
+
+
+
+
+
+## Vue初始化过程
+
+之前我们找到了编译的入口文件，
 ### runtime-with-compiler.ts
 
 `entry-runtime-with-copiler.ts`文件中的内容很简单:
@@ -107,7 +154,40 @@ Vue2部分的代码是由`runtime-with-compiler.ts`导入的。
 2. `getOuterHTML()`函数定义
 3. 导出Vue
 
-我们先来看`$mount`  
+我们这里先不详细看这些内容的详细代码，先分析出大致的脉络。具体的实现稍后再看。
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+先来看`$mount`  
 判断el是否传入，并通过`query()`判断el是字符串还是DOM元素
 
 ```typescript
@@ -183,31 +263,3 @@ Vue.prototype.$mount = function (
   return mount.call(this, el, hydrate)
 }
 ```
-
-但这里引申出来一个问题，定义了`$mount`这个函数，可它在Vue源码中又是在哪里背调用的呢？  
-我们可以通过chrome的调试工具的调用栈来找到它的调用位置。  
-在调试之前，我们需要先做几个准备工作：
-1. 构建带有sourceMap的,Vue编译&运行时文件  
-在`scripts`命令中加上`--sourcemap`选项
-```json
-{
-  "scripts": {
-    "dev": "rollup -w -c scripts/config.js --environment TARGET:full-dev --sourcemap"
-  }
-}
-```
-
-2. 准备一个最起初的Vue起始文件。(带有`new Vue()`和`render()`函数，并且使用`$mount`执行渲染)。（随便渲染一个div即可）
-3. 在chrome的源码标签页中，`Vue.prototype.$mount`的第一行代码上打上断点
-![vue-use-api](../.vuepress/public/img/article/vue-reactive/chrome-source.png)  
-
-然后我们刷新当前页面，进入调试模式  
-在chrome调试工具右侧，可以找到调用栈的信息。大致长这样：  
-![vue-use-api](../.vuepress/public/img/article/vue-reactive/chrome-callStack.png)  
-从调用栈上，我们不难发现，`Vue.$mount`是在`Vue._init`方法中调用的，而`Vue._init`又是由Vue的构造函数调用的。`(anonymous)`表示匿名函数，点进去就能看到就是我们`new Vue()`时的代码。  
-
-
-### 入口文件总结
-- el 不能是 body 或者 html 标签
-- 如果没有 render，把 template 转换成 render 函数
-- 如果有 render 方法，直接调用 mount 挂载 DOM
