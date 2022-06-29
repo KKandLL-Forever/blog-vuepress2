@@ -36,7 +36,7 @@ tags:
 ```
 ## 阅读源码前的一些Tips
 
-#### '蔑视'源码
+#### "蔑视"源码
 这里所说的蔑视不是说轻视源码的作用，而是在面对源码时不要过于害怕或者抵触。  
 一开始很多新手(没错，我也是其中一员)开始看源码前，都会被源码的庞大和复杂所震慑，不敢或者不愿意去看源码。  
 其实大可不必，源码阅读是需要一定前置知识和技巧的铺垫的，新手看不懂源码非常正常，不用为之苦恼，甚至觉得自己菜，自己不行啥的(别问我怎么知道的)。
@@ -138,7 +138,11 @@ function genConfig(name) {
 
 ## Vue初始化过程
 
-之前我们找到了编译的入口文件，
+我们找到了编译的入口文件`entry-runtime-with-compiler.ts`，接下来就可以分析Vue初始化的大概流程了。  
+一图胜千言，我总结了下这个流程：  
+![vue-use-api](../.vuepress/public/img/article/vue-reactive/Vue-entry.png)
+
+
 ### runtime-with-compiler.ts
 
 `entry-runtime-with-copiler.ts`文件中的内容很简单:
