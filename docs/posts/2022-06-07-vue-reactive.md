@@ -1,7 +1,7 @@
 ---
 layout: Post  
-title: Vue响应式原理   
-subtitle: 理解大致思路    
+title: Vue2源码系列——起手式   
+subtitle: 我可太能理解第一次看源码时的心情了    
 author: Wak  
 date: 2022-06-07  
 useHeaderImage: true  
@@ -36,11 +36,11 @@ tags:
 ```
 ## 阅读源码前的一些Tips
 
-#### "蔑视"源码
+### "蔑视"源码
 这里所说的蔑视不是说轻视源码的作用，而是在面对源码时不要过于害怕或者抵触。  
 一开始很多新手(没错，我也是其中一员)开始看源码前，都会被源码的庞大和复杂所震慑，不敢或者不愿意去看源码。  
 其实大可不必，源码阅读是需要一定前置知识和技巧的铺垫的，新手看不懂源码非常正常，不用为之苦恼，甚至觉得自己菜，自己不行啥的(别问我怎么知道的)。
-#### 不要迷失在源码中
+### 不要迷失在源码中
 Vue, React等开源库的源码通常都很庞杂，里面充斥着各种边界情况的处理，工具函数的运用，看着看着你可能就不知道自己跳转到哪里去了，回头一想，又不知道自己看到哪儿了，也忘记了这个函数/变量是干嘛的。  
 我个人(也是很多人推荐的)觉得，阅读源码，先要对他有一个整体的认识，了解他大概是由哪几部分组成的，入口文件在哪里，然后由入口文件去分析他各个模块的调用顺序(这个时候完全不用看具体实现)；这样就能了解一个大致的结构了。  
 这时，我们再带着我们的目标--你想了解哪一部分的源码: 比如响应式系统，Set, nextTick等，再去对应的部分找具体的实现。  
@@ -49,7 +49,10 @@ Vue, React等开源库的源码通常都很庞杂，里面充斥着各种边界�
 2. 大脑负担小，当我们设立了目标，其他不是目标的代码我们就可以忽略暂时不看
 3. 这样做的一个过程，也是将一个复杂任务拆分成若干简单任务，让我们有看源码的动力和勇气
 
-#### 关于调试
+### 标记源码
+在自己fork的源码中，在合适的地方打上log。这样一来代码的执行过程会比较清楚，二来在你复看源码时也会提供比较大的帮助。
+
+### 关于调试
 阅读源码的过程中，如果有任何不清楚的地方(比如某个变量是什么值，函数的调用位置等)，可以通过chrome给我们提供的工具来帮助我们更好的理解。  
 在调试之前，我们需要先做几个准备工作：
 1. 构建带有sourceMap的,Vue编译&运行时文件  
@@ -140,130 +143,225 @@ function genConfig(name) {
 
 我们找到了编译的入口文件`entry-runtime-with-compiler.ts`，接下来就可以分析Vue初始化的大概流程了。  
 一图胜千言，我总结了下这个流程：  
-![vue-use-api](../.vuepress/public/img/article/vue-reactive/Vue-entry.png)
+![vue-use-api](../.vuepress/public/img/article/vue-reactive/vue-entry.png)
+
+打包的过程中，遇到`import`会先进入被引入的模块，执行里面的内容。  
+所以图中的引用关系，由最里层的`instance/index.ts`开始，逐步向外执行。打印信息也印证了这一点：  
+![vue-use-api](../.vuepress/public/img/article/vue-reactive/vue-entry-console.png)
 
 
-### runtime-with-compiler.ts
+## new Vue()过程
 
-`entry-runtime-with-copiler.ts`文件中的内容很简单:
+在`instance/index.ts`定义了Vue的构造函数，我们在`new Vue()`时，就执行这个构造函数  
+```javascript
+function Vue(options) {
+  if (__DEV__ && !(this instanceof Vue)) {
+    warn('Vue is a constructor and should be called with the `new` keyword')
+  }
+  this._init(options)
+}
+```
+使用函数来作为构造器是因为这样方便在Vue的原型上添加方法、属性。  
+  
+在这个构造函数中又会执行`_init()`,篇幅原因源码就不放在这里了，[点击这里查看(附带中文注释)](https://github.com/KKandLL-Forever/vue2-core/blob/wk-study/src/core/instance/init.ts)。  
+`_init`是源码中非常重要的一个函数，他的执行过程如下图：
+![_init()](../.vuepress/public/img/article/vue-reactive/fn-_init.png)
 
-1. extend(Vue,vca)。vca就是vue3的composition API
-2. Vue.effect = effect 也是vue3特性，这里只分析Vue2的代码，Vue3先略过
-3. 导出Vue
+其中注册各种方法和属性的初始化方法我们先按下不表，先来看下`$mount`的内部实现。[源码在这。](https://github.com/KKandLL-Forever/vue2-core/blob/wk-study/src/platforms/web/runtime-with-compiler.ts)
 
-Vue2部分的代码是由`runtime-with-compiler.ts`导入的。  
-主要由几个部分组成:
+`runtime-with-compiler.ts`中的`$mount()`运行逻辑如下图所示：
+![mount](../.vuepress/public/img/article/vue-reactive/fn-mount1.png)
+  
 
-1. `Vue.prototype.$mount`函数定义
-2. `getOuterHTML()`函数定义
-3. 导出Vue
-
-我们这里先不详细看这些内容的详细代码，先分析出大致的脉络。具体的实现稍后再看。
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-先来看`$mount`  
-判断el是否传入，并通过`query()`判断el是字符串还是DOM元素
-
+需要注意的是，在`runtime-with-compiler.ts`和`runtime/index.ts`有两处地方都注册了`$mount()`方法，原因是：Vue源码打包时会分别生成编译时+运行时和运行时等多个版本的代码。如果只在上述文件中一个地方注册`$mount()`那肯定是不行的，所以在运行时版本中会先定义一次`$mount()`版本，在编译时+运行时版本中则会保存运行时版本中定义的`$mount()`方法，然后覆写`$mount()`方法，并在覆写后的`$mount()`的最后调用运行时注册的`$mount()`方法。
 ```typescript
-//runtime-with-compiler.ts
+//runtime/index.ts
 Vue.prototype.$mount = function (
   el?: string | Element,
-  // 非ssr时为false，反之为true
   hydrating?: boolean
 ): Component {
-  //获取el对象
-  el = el && query(el)
+   //这里再次获取el的原因是
+   //如果我们使用的不是运行编译时版本
+   //那mount时会直接执行这个$mount
+   el = el && inBrowser ? query(el) : undefined
+   return mountComponent(this, el, hydrating)
 }
 ```
-
 ```typescript
-//util/index.ts
-export function query(el: string | Element): Element {
-  if (typeof el === 'string') {
-    //el 为选择器
-    const selected = document.querySelector(el)
-    if (!selected) {
-      __DEV__ && warn('Cannot find element: ' + el)
-      return document.createElement('div')
-    }
-    return selected
-  } else {
-    //el为dom元素
-    return el
-  }
-}
-```
+//runtime-with-compiler.ts
 
-接下来判断el是否是`body`或者`html`
-
-```typescript
-// el 不能是body 或者 html
-if (el === document.body || el === document.documentElement) {
-  __DEV__ &&
-  warn(
-    `Do not mount Vue to <html> or <body> - mount to normal elements instead.`
-  )
-  return this
-}
-```
-
-接下来获取Vue实例上的`$options`, 判断是否传入了`render()`函数,如果没传`render()`函数，就会将`template`转换成`render()`函数进行渲染（这里暂时不深入template部分的实现）。  
-如果传入了`render()`函数则调用`mount()`函数渲染DOM。
-
-```typescript
-
+//保存 Vue.prototype.$mount 方法
+const mount = Vue.prototype.$mount
+//相比runtime/index.ts中的$mount新增将template编译成render函数的部分
 Vue.prototype.$mount = function (
-  l?: string | Element,
-  // 非ssr时为false，反之为true
+  el?: string | Element,
   hydrating?: boolean
 ): Component {
-  
-  /*-----代码省略-----*/
-  
-  const options = this.$options
-  //如果没有传入render函数，将template转换成render函数
-  //如果传入了render函数，直接调用下面的mount方法
-  if (!options.render) {
-    let template = options.template
-    if (template) {
-      //do something
-    } else if (el) {
-      //do something
-    }
-    if (template) {
-      //do something
-    }
-  }
-  return mount.call(this, el, hydrate)
+   // ...
+   // ...
+   return mount.call(this, el, hydrating)
 }
 ```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+[//]: # (判断el是否传入，并通过`query&#40;&#41;`判断el是字符串还是DOM元素)
+
+[//]: # ()
+[//]: # (```typescript)
+
+[//]: # (//runtime-with-compiler.ts)
+
+[//]: # (Vue.prototype.$mount = function &#40;)
+
+[//]: # (  el?: string | Element,)
+
+[//]: # (  // 非ssr时为false，反之为true)
+
+[//]: # (  hydrating?: boolean)
+
+[//]: # (&#41;: Component {)
+
+[//]: # (  //获取el对象)
+
+[//]: # (  el = el && query&#40;el&#41;)
+
+[//]: # (})
+
+[//]: # (```)
+
+[//]: # ()
+[//]: # (```typescript)
+
+[//]: # (//util/index.ts)
+
+[//]: # (export function query&#40;el: string | Element&#41;: Element {)
+
+[//]: # (  if &#40;typeof el === 'string'&#41; {)
+
+[//]: # (    //el 为选择器)
+
+[//]: # (    const selected = document.querySelector&#40;el&#41;)
+
+[//]: # (    if &#40;!selected&#41; {)
+
+[//]: # (      __DEV__ && warn&#40;'Cannot find element: ' + el&#41;)
+
+[//]: # (      return document.createElement&#40;'div'&#41;)
+
+[//]: # (    })
+
+[//]: # (    return selected)
+
+[//]: # (  } else {)
+
+[//]: # (    //el为dom元素)
+
+[//]: # (    return el)
+
+[//]: # (  })
+
+[//]: # (})
+
+[//]: # (```)
+
+[//]: # (接下来判断el是否是`body`或者`html`)
+
+[//]: # ()
+[//]: # (```typescript)
+
+[//]: # (// el 不能是body 或者 html)
+
+[//]: # (if &#40;el === document.body || el === document.documentElement&#41; {)
+
+[//]: # (  __DEV__ &&)
+
+[//]: # (  warn&#40;)
+
+[//]: # (    `Do not mount Vue to <html> or <body> - mount to normal elements instead.`)
+
+[//]: # (  &#41;)
+
+[//]: # (  return this)
+
+[//]: # (})
+
+[//]: # (```)
+
+[//]: # ()
+[//]: # (接下来获取Vue实例上的`$options`, 判断是否传入了`render&#40;&#41;`函数,如果没传`render&#40;&#41;`函数，就会将`template`转换成`render&#40;&#41;`函数进行渲染（这里暂时不深入template部分的实现）。  )
+
+[//]: # (如果传入了`render&#40;&#41;`函数则调用`mount&#40;&#41;`函数渲染DOM。)
+
+[//]: # ()
+[//]: # (```typescript)
+
+[//]: # ()
+[//]: # (Vue.prototype.$mount = function &#40;)
+
+[//]: # (  l?: string | Element,)
+
+[//]: # (  // 非ssr时为false，反之为true)
+
+[//]: # (  hydrating?: boolean)
+
+[//]: # (&#41;: Component {)
+
+[//]: # (  )
+[//]: # (  /*-----代码省略-----*/)
+
+[//]: # (  )
+[//]: # (  const options = this.$options)
+
+[//]: # (  //如果没有传入render函数，将template转换成render函数)
+
+[//]: # (  //如果传入了render函数，直接调用下面的mount方法)
+
+[//]: # (  if &#40;!options.render&#41; {)
+
+[//]: # (    let template = options.template)
+
+[//]: # (    if &#40;template&#41; {)
+
+[//]: # (      //do something)
+
+[//]: # (    } else if &#40;el&#41; {)
+
+[//]: # (      //do something)
+
+[//]: # (    })
+
+[//]: # (    if &#40;template&#41; {)
+
+[//]: # (      //do something)
+
+[//]: # (    })
+
+[//]: # (  })
+
+[//]: # (  return mount.call&#40;this, el, hydrate&#41;)
+
+[//]: # (})
+
+[//]: # (```)
