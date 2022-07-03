@@ -152,6 +152,7 @@ function genConfig(name) {
 
 ## new Vue()过程
 
+Vue的初始化过程在真正创建Vue实例之前，做了一些准备、铺垫工作，当然包括Vue的构造函数。
 在`instance/index.ts`定义了Vue的构造函数，我们在`new Vue()`时，就执行这个构造函数  
 ```javascript
 function Vue(options) {
@@ -167,7 +168,7 @@ function Vue(options) {
 `_init`是源码中非常重要的一个函数，他的执行过程如下图：
 ![_init()](../.vuepress/public/img/article/vue-reactive/fn-_init.png)
 
-其中注册各种方法和属性的初始化方法我们先按下不表，先来看下`$mount`的内部实现。[源码在这。](https://github.com/KKandLL-Forever/vue2-core/blob/wk-study/src/platforms/web/runtime-with-compiler.ts)
+其中选项合并、注册各种方法和属性的初始化方法我们先按下不表，先来看下`$mount`的内部实现。[源码在这。](https://github.com/KKandLL-Forever/vue2-core/blob/wk-study/src/platforms/web/runtime-with-compiler.ts)
 
 `runtime-with-compiler.ts`中的`$mount()`运行逻辑如下图所示：
 ![mount](../.vuepress/public/img/article/vue-reactive/fn-mount1.png)
