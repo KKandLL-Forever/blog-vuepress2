@@ -91,11 +91,11 @@ Vue, React等开源库的源码通常都很庞杂，里面充斥着各种边界�
 2. 准备一个最起初的Vue起始文件。(带有`new Vue()`和`render()`函数，并且使用`$mount`执行渲染)。（随便渲染一个div即可）
 3. 这里我们以寻找`Vue.prototype.$mount`的调用位置为例：  
    在chrome的源码标签页中，`Vue.prototype.$mount`的第一行代码上打上断点
-   ![vue-use-api](../.vuepress/public/img/article/vue-reactive/chrome-source.png)
+   ![vue-use-api](../.vuepress/public/img/article/vue-startup/chrome-source.png)
 
 然后我们刷新当前页面，进入调试模式  
 在chrome调试工具右侧，可以找到调用栈的信息。大致长这样：  
-![vue-use-api](../.vuepress/public/img/article/vue-reactive/chrome-callStack.png)  
+![vue-use-api](../.vuepress/public/img/article/vue-startup/chrome-callStack.png)  
 从调用栈上，我们不难发现，`Vue.$mount`是在`Vue._init`方法中调用的，而`Vue._init`又是由Vue的构造函数调用的。`(anonymous)`表示匿名函数，点进去就能看到就是我们`new Vue()`时的代码。
 
 ## 寻找入口文件
@@ -159,11 +159,11 @@ function genConfig(name) {
 
 我们找到了编译的入口文件`entry-runtime-with-compiler.ts`，接下来就可以分析Vue初始化的大概流程了。  
 一图胜千言，我总结了下这个流程：  
-![vue-use-api](../.vuepress/public/img/article/vue-reactive/vue-entry.png)
+![vue-use-api](../.vuepress/public/img/article/vue-startup/vue-entry.png)
 
 打包的过程中，遇到`import`会先进入被引入的模块，执行里面的内容。  
 所以图中的引用关系，由最里层的`instance/index.ts`开始，逐步向外执行。打印信息也印证了这一点：  
-![vue-use-api](../.vuepress/public/img/article/vue-reactive/vue-entry-console.png)
+![vue-use-api](../.vuepress/public/img/article/vue-startup/vue-entry-console.png)
 
 ## new Vue()过程
 
@@ -184,13 +184,13 @@ function Vue(options) {
 在这个构造函数中又会执行`_init()`
 ,篇幅原因源码就不放在这里了，[点击这里查看(附带中文注释)](https://github.com/KKandLL-Forever/vue2-core/blob/wk-study/src/core/instance/init.ts)。  
 `_init`是源码中非常重要的一个函数，他的执行过程如下图：
-![_init()](../.vuepress/public/img/article/vue-reactive/fn-_init.png)
+![_init()](../.vuepress/public/img/article/vue-startup/fn-_init.png)
 
 其中选项合并、注册各种方法和属性的初始化方法我们先按下不表，先来看下`$mount`
 的内部实现。[源码在这。](https://github.com/KKandLL-Forever/vue2-core/blob/wk-study/src/platforms/web/runtime-with-compiler.ts)
 
 `runtime-with-compiler.ts`中的`$mount()`运行逻辑如下图所示：
-![mount](../.vuepress/public/img/article/vue-reactive/fn-mount1.png)
+![mount](../.vuepress/public/img/article/vue-startup/fn-mount1.png)
 
 需要注意的是，在`runtime-with-compiler.ts`和`runtime/index.ts`有两处地方都注册了`$mount()`
 方法，原因是：Vue源码打包时会分别生成编译时+运行时和运行时等多个版本的代码。如果只在上述文件中一个地方注册`$mount()`那肯定是不行的，所以在运行时版本中会先定义一次`$mount()`
