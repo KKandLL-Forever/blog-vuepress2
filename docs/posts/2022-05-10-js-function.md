@@ -5,7 +5,7 @@ subtitle: 第一次接触这种概念的我惊呆了😮
 author: Wak  
 date: 2022-05-10  
 useHeaderImage: true  
-headerImage: /img/pages/page14.webp  
+headerImage: /img/pages/page07.webp  
 tags:
 - JavaScript
 ---

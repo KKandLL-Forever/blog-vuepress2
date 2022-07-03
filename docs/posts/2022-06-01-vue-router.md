@@ -5,7 +5,7 @@ subtitle: 小型vue-router,理解其实现大致思路
 author: Wak  
 date: 2022-06-01  
 useHeaderImage: true  
-headerImage: /img/pages/page11.webp  
+headerImage: /img/pages/page12.webp  
 tags:
 - Vue
 - Vue-router
