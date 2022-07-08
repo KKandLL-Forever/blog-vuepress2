@@ -131,12 +131,100 @@ function getData(data: Function, vm: Component): any {
 1. 根实例传入的data因为是对象，不会调用getData()
 2. 这里其实也印证了"组件中的data是一个函数"，组件中data函数返回一个对象，这里`data.call`调用后，就能获取到我们定义的data对象了。
 
+## observe
+1. 判断是否非对象/Ref/VNode，是则直接return
+2. 判断是否有'__ob__'属性（有的话说明已经被响应式处理过了），有的话ob等于__ob__的值
+如果没有的话还要判断几个条件：
+   - shouldObserve,这个属性是通过toggleObserving函数改变的，有些情况下我们并不想响应式处理时调用此函数改变shouldObserve
+   - isServerRendering 是否是ssr
+   - 是否是数组或者纯对象
+   - Object.isExtensible判断对象是否可扩展，也就是是否能添加__ob__属性
+   - vue实例不需要响应式处理
+3. 实例化Observer
+::: details 查看observe源码
+```typescript
+export function observe(value: any, shallow?: boolean): Observer | void {
+  // 判断 value 是否是对象
+  if (!isObject(value) || isRef(value) || value instanceof VNode) return
+  let ob: Observer | void
+  // 如果 value 有 __ob__(observer对象) 属性
+  if (hasOwn(value, '__ob__') && value.__ob__ instanceof Observer) {
+    ob = value.__ob__
+  } else if (
+    shouldObserve &&
+    !isServerRendering() &&
+    (isArray(value) || isPlainObject(value)) &&
+    Object.isExtensible(value) &&
+    !value.__v_skip //如果是vue实例不需要响应式处理
+  ) {
+    // 创建一个 Observer 对象
+    ob = new Observer(value, shallow)
+  }
+  return ob
+}
+```
+:::
 
+## Observer
+实例化过程
+1. 实例化Dep类
+2. def函数为传进来的对象(constructor的参数value必然是对象，因为在observe中已经过滤了)，设置__ob__属性并设置它的值为Observer实例
+3. value如果为数组，调用observeArray函数（之后再讲数组）
+4. 其他对象，调用walk函数遍历每个属性
 
+::: details 查看Observer源码
+```typescript
+export class Observer {
+  // 管理依赖的Dep类
+  dep: Dep
+  // 实例计数器
+  vmCount: number // number of vms that have this object as root $data
+  
+  constructor(public value: any, public shallow = false) {
+    // this.value = value
+    this.dep = new Dep()
+    this.vmCount = 0
+    // 将实例挂载到观察对象的 __ob__ 属性
+    def(value, '__ob__', this)
+    // 数组的响应式处理
+    if (isArray(value)) {
+      if (hasProto) {
+        protoAugment(value, arrayMethods)
+      } else {
+        copyAugment(value, arrayMethods, arrayKeys)
+      }
+      if (!shallow) {
+        this.observeArray(value)
+      }
+    } else {
+      // 遍历对象中的每一个属性，转换成 setter/getter
+      this.walk(value, shallow)
+    }
+  }
+  
+  walk(obj: object, shallow: boolean) {
+    // 获取观察对象的每一个属性
+    const keys = Object.keys(obj)
+    // 遍历每一个属性，设置为响应式数据
+    for (let i = 0; i < keys.length; i++) {
+      const key = keys[i]
+      defineReactive(obj, key, NO_INIITIAL_VALUE, undefined, shallow)
+    }
+  }
+  
+  observeArray(items: Array<any>) {
+    for (let i = 0, l = items.length; i < l; i++) {
+      observe(items[i])
+    }
+  }
+}
 
+```
+:::
 
-
-
+### defineReactive
+### 数组的响应式
+## Dep
 
 
 
