@@ -1,6 +1,6 @@
 ---
 layout: Post  
-title: Vue2源码系列——响应式系统   
+title: Vue2源码系列——响应式系统(writing)   
 subtitle: 这应该都想学的吧?    
 author: Wak  
 date: 2022-07-03  

@@ -1,6 +1,6 @@
 ---
 layout: Post  
-title: HTTP/1.1和HTTP/2的区别   
+title: HTTP/1.1和HTTP/2的区别(writing)   
 subtitle: 看得我头晕+  
 author: Wak  
 date: 2022-05-10  
