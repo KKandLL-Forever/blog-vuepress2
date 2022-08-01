@@ -2,6 +2,7 @@ import { defineUserConfig } from "vuepress";
 import gungnirTheme from 'vuepress-theme-gungnir'
 import { viteBundler } from "@vuepress/bundler-vite";
 import { searchConsolePlugin } from "vuepress-plugin-china-search-console";
+import { seoPlugin } from "vuepress-plugin-seo2";
 
 // import { navbar, sidebar } from "./configs";
 
@@ -154,8 +155,12 @@ export default  defineUserConfig({
       baiduId: '2288f030179bc7571034aa96d66725e2',
       autoPushBaiduSwitch: true,
       toutiaoAutoPushId: '352e2c656ba7b212976689205e9947debad9a8e96ce946bc5ecb826d911c0fe019d1c501ebd3301f5e2290626f5b53d078c8250527fa0dfd9783a026ff3cf719'
-    })
-    
+    }),
+    seoPlugin({
+      // 你的选项
+      hostname: 'https://kkanll.wang/',
+      restrictions: '13+',
+    }),
   ]
 })
 
